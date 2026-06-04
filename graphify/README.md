@@ -4,3 +4,12 @@
 * `graphify install`
 * `graphify install --platform opencode`
 * `graphify opencode install` - for opencode always use the knoledge graph
+
+### Commands
+[List](https://github.com/safishamsi/graphify#full-command-reference)
+* `/graphify ./raw --mode deep`        # more aggressive relationship extraction
+* ```
+  graphify hook install              # post-commit + post-checkout hooks
+  graphify hook uninstall
+  graphify hook status
+  ```
