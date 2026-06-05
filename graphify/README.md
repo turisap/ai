@@ -13,3 +13,11 @@
   graphify hook uninstall
   graphify hook status
   ```
+  
+
+### Codegraph
+* `brew install node`
+* `npm i -g @colbymchenry/codegraph`
+* `codegraph install`
+
+do not commit to git, rebuild locally
