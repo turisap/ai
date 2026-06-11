@@ -1,3 +1,121 @@
+# mcp-task-server
+
+A production-grade MCP (Model Context Protocol) server in Go that exposes your task domain to LLM agents.
+
+## Quick start
+
+```bash
+# Run dependencies
+docker compose -f docker/docker-compose.yml up postgres redis -d
+
+# Run server
+go run ./cmd/server
+
+# Verify — should return tool list
+curl -s -X POST http://localhost:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","clientInfo":{"name":"curl","version":"0.1"},"capabilities":{}}}' | jq .
+
+curl -s -X POST http://localhost:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | jq .
+
+# Call a tool
+curl -s -X POST http://localhost:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_tasks","arguments":{"store_id":"some-uuid","limit":5}}}' | jq .
+```
+
+## Connect to Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "task-server": {
+      "url": "http://localhost:8080/mcp"
+    }
+  }
+}
+```
+
+Restart Claude Desktop. Your tools will appear in the tool picker.
+
+## Connect to OpenCode
+
+Add to your OpenCode config:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "task-server": {
+        "url": "http://localhost:8080/mcp"
+      }
+    }
+  }
+}
+```
+
+## Project structure
+
+```
+cmd/server/main.go          — entrypoint, wires everything
+internal/mcp/
+  types.go                  — JSON-RPC + MCP protocol types
+  session.go                — per-client SSE session
+  registry.go               — tool registry + dispatcher
+  server.go                 — HTTP server, initialize, tools/list, tools/call
+internal/tools/
+  tools.go                  — tool definitions + stub handlers (wire real DB here)
+docker/docker-compose.yml
+```
+
+## Wiring real data (week 2 task)
+
+Each tool handler in `internal/tools/tools.go` has a `// TODO` comment showing
+exactly what query to run. Steps:
+
+1. Add `pgx/v5` pool to `main.go`, pass it into `tools.RegisterAll`
+2. Add `go-redis/v9` client similarly
+3. Replace stub bodies with the real queries shown in the TODO comments
+4. For `create_task`: wrap the insert in a transaction with an outbox row
+
+## Adding a new tool
+
+```go
+// 1. Define it
+var toolAssignTask = mcp.Tool{
+    Name:        "assign_task",
+    Description: "Reassign a task to a different user.",
+    InputSchema: mcp.InputSchema{
+        Type: "object",
+        Properties: map[string]mcp.Property{
+            "task_id":     {Type: "string", Description: "UUID of the task"},
+            "assignee_id": {Type: "string", Description: "UUID of the new assignee"},
+        },
+        Required: []string{"task_id", "assignee_id"},
+    },
+}
+
+// 2. Implement the handler
+func handleAssignTask(ctx context.Context, raw json.RawMessage) (mcp.ToolCallResult, error) { ... }
+
+// 3. Register in RegisterAll()
+registry.Register(toolAssignTask, handleAssignTask)
+```
+
+## Roadmap
+
+- [ ] Wire real Postgres queries (get_tasks, create_task)
+- [ ] Wire real Redis counters (get_task_counters)  
+- [ ] Outbox transaction for create_task / assign_task
+- [ ] API key auth middleware
+- [ ] Per-session rate limiting (sliding window in Redis)
+- [ ] Tool call audit log (agent_activity table)
+
+
 ### PLAN
 1. Read the transport page (~20 min)
    Go to modelcontextprotocol.io/docs/concepts/transports. The key things to understand:
@@ -12,7 +130,7 @@ HTTP+SSE requires two separate endpoints (GET /mcp for SSE and POST /messages fo
 4. Build initialize + tools/list yourself first
    Don't reach for a library yet. Wire up a bare net/http server that responds to those two methods with hardcoded JSON. Once it works with a real client (Claude Desktop or OpenCode), you'll have internalized the protocol. Then optionally switch to a library.
 
-### Tools 
+### Tools
 `get_tasks (already scaffolded)`
 Query tasks by store, status, assignee. The thing you currently do with a raw psql query a dozen times a day.
 `get_task_counters (already scaffolded)`

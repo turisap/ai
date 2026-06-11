@@ -1,0 +1,112 @@
+version: '3'
+
+dotenv: ['.env']
+
+vars:
+  COMPOSE: docker compose -f docker/docker-compose.yml
+
+tasks:
+  # ── infrastructure ───────────────────────────────────────────────────────────
+
+  up:
+    desc: Start Postgres and Redis
+    cmds:
+      - '{{.COMPOSE}} up -d postgres redis'
+
+  down:
+    desc: Stop and remove containers
+    cmds:
+      - '{{.COMPOSE}} down'
+
+  down:volumes:
+    desc: Stop containers and wipe volumes (destroys DB data)
+    cmds:
+      - '{{.COMPOSE}} down -v'
+
+  logs:
+    desc: Tail logs for all containers
+    cmds:
+      - '{{.COMPOSE}} logs -f'
+
+  ps:
+    desc: Show running containers
+    cmds:
+      - '{{.COMPOSE}} ps'
+
+  # ── server ───────────────────────────────────────────────────────────────────
+
+  run:
+    desc: Run the MCP server (reads .env automatically)
+    deps: [up]
+    cmds:
+      - go run ./cmd/server
+
+  build:
+    desc: Build the server binary to ./bin/server
+    cmds:
+      - mkdir -p bin
+      - go build -o bin/server ./cmd/server
+
+  # ── dev utilities ────────────────────────────────────────────────────────────
+
+  tidy:
+    desc: go mod tidy
+    cmds:
+      - go mod tidy
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run ./...
+
+  test:
+    desc: Run all tests
+    cmds:
+      - go test ./...
+
+  # ── database ─────────────────────────────────────────────────────────────────
+
+  psql:
+    desc: Open a psql shell using DATABASE_URL from .env
+    cmds:
+      - psql $DATABASE_URL
+
+  migrate:up:
+    desc: Run goose migrations up
+    cmds:
+      - goose -dir migrations postgres "$DATABASE_URL" up
+
+  migrate:down:
+    desc: Roll back the last goose migration
+    cmds:
+      - goose -dir migrations postgres "$DATABASE_URL" down
+
+  migrate:status:
+    desc: Show goose migration status
+    cmds:
+      - goose -dir migrations postgres "$DATABASE_URL" status
+
+  # ── redis ────────────────────────────────────────────────────────────────────
+
+  redis-cli:
+    desc: Open a redis-cli shell using REDIS_URL from .env
+    cmds:
+      - redis-cli -u $REDIS_URL
+
+  # ── smoke test ───────────────────────────────────────────────────────────────
+
+  smoke:
+    desc: Hit the local MCP server with initialize + tools/list
+    vars:
+      HOST: '{{.HOST | default "http://localhost:8080"}}'
+    cmds:
+      - |
+        echo "==> initialize"
+        curl -s -X POST {{.HOST}}/mcp \
+          -H "Content-Type: application/json" \
+          -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","clientInfo":{"name":"taskfile","version":"0.1"},"capabilities":{}}}' | jq .
+      - |
+        echo "==> tools/list"
+        curl -s -X POST {{.HOST}}/mcp \
+          -H "Content-Type: application/json" \
+          -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | jq .
