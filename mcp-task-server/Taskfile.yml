@@ -23,6 +23,12 @@ tasks:
     cmds:
       - '{{.COMPOSE}} down -v'
 
+  restart:
+    desc: restart docker containers
+    cmds:
+      - task: down:volumes
+      - task: up
+
   logs:
     desc: Tail logs for all containers
     cmds:
@@ -110,3 +116,24 @@ tasks:
         curl -s -X POST {{.HOST}}/mcp \
           -H "Content-Type: application/json" \
           -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | jq .
+
+
+  call:get-tasks:
+    desc: "Get tasks for a store. Usage: task call:get-tasks STORE=<uuid>"
+    vars:
+      STORE: '{{.STORE | default "b0000000-0000-0000-0000-000000000001"}}'
+    cmds:
+      - |
+        curl -s -X POST http://localhost:${ADDR#:}/mcp \
+          -H "Content-Type: application/json" \
+          -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_tasks","arguments":{"store_id":"{{.STORE}}"}}}'  | jq .
+
+    call:get-counters:
+      desc: "Get task counters for a store. Usage: task call:get-counters STORE=<uuid>"
+      vars:
+        STORE: '{{.STORE | default "b0000000-0000-0000-0000-000000000001"}}'
+      cmds:
+        - |
+          curl -s -X POST http://localhost:${ADDR#:}/mcp \
+            -H "Content-Type: application/json" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_task_counters","arguments":{"store_id":"{{.STORE}}"}}}'  | jq .
