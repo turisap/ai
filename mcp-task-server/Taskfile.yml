@@ -137,3 +137,23 @@ tasks:
           curl -s -X POST http://localhost:${ADDR#:}/mcp \
             -H "Content-Type: application/json" \
             -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_task_counters","arguments":{"store_id":"{{.STORE}}"}}}'  | jq .
+
+  smoke:count-user-tasks:
+    desc: "Get task count for a user. Usage: task smoke:count-user-tasks USER=<uuid>"
+    vars:
+      USER: '{{.USER | default "some-user-uuid"}}'
+    cmds:
+      - |
+        curl -s -X POST http://localhost:${ADDR#:}/mcp \
+          -H "Content-Type: application/json" \
+          -d '{
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+              "name": "get_count_user_tasks",
+              "arguments": {
+                "user_id": "{{.USER}}"
+              }
+            }
+          }' | jq .

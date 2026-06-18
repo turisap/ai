@@ -18,6 +18,7 @@ func RegisterAll(registry *mcp.Registry, db *pgxpool.Pool, rdb *redis.Client) {
 	registry.Register(toolGetTasks, handleGetTasksWith(db))
 	registry.Register(toolGetTaskCounters, handleGetTaskCountersWith(rdb))
 	registry.Register(toolCreateTask, handleCreateTaskWith(db))
+	registry.Register(toolCountUserTasks, handleGetCountUserTasksWith(db))
 }
 
 // ── get_tasks ────────────────────────────────────────────────────────────────
