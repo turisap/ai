@@ -2,6 +2,10 @@ version: '3'
 
 dotenv: ['.env']
 
+includes:
+  smoke: ./scripts/smoke.yml
+  call: ./scripts/call.yml
+
 vars:
   COMPOSE: docker compose -f docker/docker-compose.yml
 
@@ -99,61 +103,7 @@ tasks:
     cmds:
       - redis-cli -u $REDIS_URL
 
-  # ── smoke test ───────────────────────────────────────────────────────────────
-
-  smoke:
-    desc: Hit the local MCP server with initialize + tools/list
-    vars:
-      HOST: '{{.HOST | default "http://localhost:8080"}}'
-    cmds:
-      - |
-        echo "==> initialize"
-        curl -s -X POST {{.HOST}}/mcp \
-          -H "Content-Type: application/json" \
-          -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","clientInfo":{"name":"taskfile","version":"0.1"},"capabilities":{}}}' | jq .
-      - |
-        echo "==> tools/list"
-        curl -s -X POST {{.HOST}}/mcp \
-          -H "Content-Type: application/json" \
-          -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | jq .
-
-
-  call:get-tasks:
-    desc: "Get tasks for a store. Usage: task call:get-tasks STORE=<uuid>"
-    vars:
-      STORE: '{{.STORE | default "b0000000-0000-0000-0000-000000000001"}}'
-    cmds:
-      - |
-        curl -s -X POST http://localhost:${ADDR#:}/mcp \
-          -H "Content-Type: application/json" \
-          -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_tasks","arguments":{"store_id":"{{.STORE}}"}}}'  | jq .
-
-    call:get-counters:
-      desc: "Get task counters for a store. Usage: task call:get-counters STORE=<uuid>"
-      vars:
-        STORE: '{{.STORE | default "b0000000-0000-0000-0000-000000000001"}}'
-      cmds:
-        - |
-          curl -s -X POST http://localhost:${ADDR#:}/mcp \
-            -H "Content-Type: application/json" \
-            -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_task_counters","arguments":{"store_id":"{{.STORE}}"}}}'  | jq .
-
-  smoke:count-user-tasks:
-    desc: "Get task count for a user. Usage: task smoke:count-user-tasks USER=<uuid>"
-    vars:
-      USER: '{{.USER | default "some-user-uuid"}}'
-    cmds:
-      - |
-        curl -s -X POST http://localhost:${ADDR#:}/mcp \
-          -H "Content-Type: application/json" \
-          -d '{
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {
-              "name": "get_count_user_tasks",
-              "arguments": {
-                "user_id": "{{.USER}}"
-              }
-            }
-          }' | jq .
+  opencode:
+     desc: Export .env and launch opencode
+     cmds:
+        - export $(cat .env | xargs) && opencode

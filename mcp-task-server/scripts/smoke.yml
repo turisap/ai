@@ -1,0 +1,67 @@
+version: '3'
+
+tasks:
+  smoke:
+    desc: Hit the local MCP server with initialize + tools/list
+    vars:
+      HOST: '{{.HOST | default "http://localhost:8080"}}'
+    cmds:
+      - |
+        echo "==> initialize"
+        curl -s -X POST {{.HOST}}/mcp \
+          -H "Content-Type: application/json" \
+          -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","clientInfo":{"name":"taskfile","version":"0.1"},"capabilities":{}}}' | jq .
+      - |
+        echo "==> tools/list"
+        curl -s -X POST {{.HOST}}/mcp \
+          -H "Content-Type: application/json" \
+          -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' | jq .
+  
+
+  smoke:count-user-tasks:
+    desc: "Get task count for a user. Usage: task smoke:count-user-tasks USER=<uuid>"
+    vars:
+      USER: '{{.USER | default "some-user-uuid"}}'
+    cmds:
+      - |
+        curl -s -X POST http://localhost:${ADDR#:}/mcp \
+          -H "Content-Type: application/json" \
+          -d '{
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+              "name": "get_count_user_tasks",
+              "arguments": {
+                "user_id": "{{.USER}}"
+              }
+            }
+          }' | jq .
+
+  smoke:auth:
+    desc: Verify auth middleware — first call should fail (401), second should pass
+    vars:
+      HOST: '{{.HOST | default "http://localhost:8080"}}'
+    cmds:
+        - |
+          echo "==> no key (expect 401)"
+          curl -s -o /dev/null -w "%{http_code}" -X POST {{.HOST}}/mcp \
+          -H "Content-Type: application/json" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+          echo ""
+        - |
+          echo "==> wrong key (expect 401)"
+          curl -s -o /dev/null -w "%{http_code}" -X POST {{.HOST}}/mcp \
+          -H "Content-Type: application/json" \
+          -H "X-API-Key: wrong-key" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+          echo ""
+        - |
+          echo "==> correct key (expect 200)"
+          curl -s -X POST {{.HOST}}/mcp \
+          -H "Content-Type: application/json" \
+          -H "X-API-Key: $MCP_API_KEY" \
+            -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | jq .
+        - |
+          echo "==> health (expect 200, no key needed)"
+          curl -s {{.HOST}}/health | jq .
