@@ -17,18 +17,22 @@ type Server struct {
 	version  string
 	registry *Registry
 
-	sessions sync.Map // session ID → *Session
+	sessions sync.Map
+
+	apiKey string
 }
 
-func NewServer(name, version string, registry *Registry) *Server {
-	return &Server{name: name, version: version, registry: registry}
+func NewServer(name, version, apiKey string, registry *Registry) *Server {
+	return &Server{name: name, version: version, apiKey: apiKey, registry: registry}
 }
 
 // Handler returns an http.Handler to mount at your chosen path (e.g. /mcp).
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/mcp", s.handleMCP)
-	return mux
+	mux.HandleFunc("/health", s.handleHealth)
+
+	return s.authMiddleware(mux)
 }
 
 // handleMCP dispatches GET (SSE stream) and POST (JSON-RPC message).
@@ -76,6 +80,11 @@ func (s *Server) handleSSE(w http.ResponseWriter, r *http.Request) {
 	// Block until the client disconnects.
 	<-r.Context().Done()
 	slog.Info("client disconnected", "session_id", session.ID)
+}
+
+func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
 
 // handlePost receives a JSON-RPC request, dispatches it, and responds.

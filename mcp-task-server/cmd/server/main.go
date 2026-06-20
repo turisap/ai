@@ -22,6 +22,7 @@ type config struct {
 	DatabaseURL string `env:"DATABASE_URL"  env-default:"postgres://tasks:tasks@localhost:5432/tasks"`
 	RedisURL    string `env:"REDIS_URL"     env-default:"redis://localhost:6379"`
 	LogLevel    string `env:"LOG_LEVEL"     env-default:"debug"`
+	APIKey      string `env:"MCP_API_KEY"    env-required:"true"`
 }
 
 func main() {
@@ -76,7 +77,7 @@ func main() {
 	// MCP server
 	registry := mcp.NewRegistry()
 	tools.RegisterAll(registry, db, rdb)
-	srv := mcp.NewServer("mcp-task-server", "0.1.0", registry)
+	srv := mcp.NewServer("mcp-task-server", "0.1.0", cfg.APIKey, registry)
 
 	httpSrv := &http.Server{
 		Addr:        cfg.Addr,

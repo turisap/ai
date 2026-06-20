@@ -4,7 +4,10 @@
     "task-server": {
       "type": "remote",
       "url": "http://localhost:8080/mcp",
-      "enabled": true
+      "enabled": true,
+      "headers": {
+        "X-API-Key": "$MCP_API_KEY"
+      }
     }
   }
 }
