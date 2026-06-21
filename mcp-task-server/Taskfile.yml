@@ -103,7 +103,7 @@ tasks:
     cmds:
       - redis-cli -u $REDIS_URL
 
-  opencode:
+  oc:
      desc: Export .env and launch opencode
      cmds:
-        - export $(cat .env | xargs) && opencode
+        - export $(grep -v '^#' .env | grep -v '^$' | sed 's/#.*//' | xargs) && opencode
