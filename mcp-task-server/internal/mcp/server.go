@@ -19,11 +19,12 @@ type Server struct {
 
 	sessions sync.Map
 
-	apiKey string
+	apiKey    string
+	ReqApiKey bool
 }
 
-func NewServer(name, version, apiKey string, registry *Registry) *Server {
-	return &Server{name: name, version: version, apiKey: apiKey, registry: registry}
+func NewServer(name, version, apiKey string, registry *Registry, ReqApiKey bool) *Server {
+	return &Server{name: name, version: version, apiKey: apiKey, registry: registry, ReqApiKey: ReqApiKey}
 }
 
 // Handler returns an http.Handler to mount at your chosen path (e.g. /mcp).

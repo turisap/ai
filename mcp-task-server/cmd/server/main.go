@@ -23,6 +23,7 @@ type config struct {
 	RedisURL    string `env:"REDIS_URL"     env-default:"redis://localhost:6379"`
 	LogLevel    string `env:"LOG_LEVEL"     env-default:"debug"`
 	APIKey      string `env:"MCP_API_KEY"    env-required:"true"`
+	ReqApiKey   bool   `env:"REQ_API_KEY"    env-required:"true"`
 }
 
 func main() {
@@ -77,7 +78,7 @@ func main() {
 	// MCP server
 	registry := mcp.NewRegistry()
 	tools.RegisterAll(registry, db, rdb)
-	srv := mcp.NewServer("mcp-task-server", "0.1.0", cfg.APIKey, registry)
+	srv := mcp.NewServer("mcp-task-server", "0.1.0", cfg.APIKey, registry, cfg.ReqApiKey)
 
 	httpSrv := &http.Server{
 		Addr:        cfg.Addr,

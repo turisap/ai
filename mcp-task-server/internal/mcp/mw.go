@@ -8,7 +8,7 @@ import (
 func (s *Server) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// SSE connections and health checks skip auth
-		if r.URL.Path == "/health" {
+		if r.URL.Path == "/health" || !s.ReqApiKey {
 			next.ServeHTTP(w, r)
 			return
 		}
