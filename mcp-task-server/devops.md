@@ -14,3 +14,26 @@ https://docs.docker.com/get-started/docker-concepts/building-images/understandin
 * `node -e 'console.log("Hello world!")'`
 * `docker container commit -m "Add node" base-container node-base` - commit changes to the initial image
 * `docker image history node-base` - check history
+
+### volumes and bind mounts
+* bind mounts are for development, volumes are for production
+* `docker volume ls`
+* `docker volume inspect mydata`
+```yaml
+services:
+  service-1:
+    image: ubuntu:latest
+    command: sleep infinity
+    volumes:
+      - ./code:/app          # Bind mount for development
+      - shared:/data         # Named volume shared with worker
+
+  service-2:
+    image: ubuntu:latest
+    command: sleep infinity
+    volumes:
+      - shared:/data         # Same volume as service-1
+
+volumes:
+  shared:
+```
