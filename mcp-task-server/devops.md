@@ -37,3 +37,4 @@ services:
 volumes:
   shared:
 ```
+* network create `docker network create demo-network -d bridge`
