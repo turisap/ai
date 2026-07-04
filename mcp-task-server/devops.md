@@ -38,3 +38,6 @@ volumes:
   shared:
 ```
 * network create `docker network create demo-network -d bridge`
+
+### security
+* if u `COPY . .` then `.env` files are also copied and baked into the image - insecure. use `.dockeringore`
