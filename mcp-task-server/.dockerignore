@@ -1,5 +1,7 @@
 .env
 .env.example
+.env-docker
+.env.local
 .git
 *.pem
 *.key

@@ -19,11 +19,11 @@ import (
 
 type config struct {
 	Addr        string `env:"ADDR"         env-default:":8080"`
-	DatabaseURL string `env:"DATABASE_URL"  env-default:"postgres://tasks:tasks@localhost:5432/tasks"`
-	RedisURL    string `env:"REDIS_URL"     env-default:"redis://localhost:6379"`
+	DatabaseURL string `env:"DATABASE_URL"  env-default:"postgres://tasks:tasks@localhost:5432/tasks" env-required:"true" `
+	RedisURL    string `env:"REDIS_URL"     env-default:"redis://localhost:6379" env-required:"true"`
 	LogLevel    string `env:"LOG_LEVEL"     env-default:"debug"`
 	APIKey      string `env:"MCP_API_KEY"    env-required:"true"`
-	ReqApiKey   bool   `env:"REQ_API_KEY"    env-required:"true"`
+	ReqApiKey   bool   `env:"REQ_API_KEY"`
 }
 
 func main() {
