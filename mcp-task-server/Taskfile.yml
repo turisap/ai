@@ -1,13 +1,13 @@
 version: '3'
 
-dotenv: ['.env']
+#dotenv: ['.env'] breaks docker run
 
 includes:
   smoke: ./scripts/smoke.yml
   call: ./scripts/call.yml
 
 vars:
-  COMPOSE: docker compose -f docker/docker-compose.yml
+  COMPOSE: docker compose -f docker-compose.yml --env-file .env-docker
 
 tasks:
   # ── infrastructure ───────────────────────────────────────────────────────────
@@ -15,7 +15,13 @@ tasks:
   up:
     desc: Start Postgres and Redis
     cmds:
-      - '{{.COMPOSE}} up -d postgres redis'
+      - '{{.COMPOSE}} up --build -d postgres redis server'
+
+  up-clean:
+    desc: Start everything with a full no-cache rebuild
+    cmds:
+      - '{{.COMPOSE}} build --no-cache server'
+      - '{{.COMPOSE}} up -d postgres redis server'
 
   down:
     desc: Stop and remove containers
