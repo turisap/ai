@@ -19,7 +19,9 @@ services:
       - "6379:6379"
 
   server:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     ports:
       - "8080:8080"
     environment:

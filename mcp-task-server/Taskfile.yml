@@ -7,7 +7,7 @@ includes:
   call: ./scripts/call.yml
 
 vars:
-  COMPOSE: docker compose -f docker-compose.yml --env-file .env-docker
+  COMPOSE: docker compose -f ./docker/docker-compose.yml --env-file ./docker/.env-docker
 
 tasks:
   # ── infrastructure ───────────────────────────────────────────────────────────
