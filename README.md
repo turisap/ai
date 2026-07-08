@@ -158,3 +158,28 @@ Wrap your pg_stat_user_indexes query (conv 36) — the agent can proactively fla
 Query Redis for your CDC projection version vs the latest DB transaction ID. Answers "is my counter cache stale?" which you currently have to piece together manually.
 `search_tasks`
 Full-text search over task titles/descriptions. Useful when debugging "find me all tasks that mention X" without writing a LIKE query.
+
+
+### Setup
+* `brew install python@3.12 uv`
+* `uv tool install graphifyy`
+* `graphify install`
+* `graphify install --platform opencode`
+* `graphify opencode install` - for opencode always use the knoledge graph
+
+### Commands
+[List](https://github.com/safishamsi/graphify#full-command-reference)
+* `/graphify ./raw --mode deep`        # more aggressive relationship extraction
+* ```
+  graphify hook install              # post-commit + post-checkout hooks
+  graphify hook uninstall
+  graphify hook status
+  ```
+
+
+### Codegraph
+* `brew install node`
+* `npm i -g @colbymchenry/codegraph`
+* `codegraph install`
+
+do not commit to git, rebuild locally

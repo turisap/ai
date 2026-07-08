@@ -1,57 +1,76 @@
-# AGENTS.md — `mcp-memory-service` launcher repo
+# AGENTS.md — `mcp-task-server`
 
-## What this repo is
+## What this is
 
-A minimal wrapper that provides a local Python venv with the
-[`mcp-memory-service`](https://github.com/doobidoo/mcp-memory-service) PyPI
-package (v10.69.0). **No source code lives here.** The actual package is
-installed at `.venv/lib/python3.14/site-packages/mcp_memory_service/`.
+A Go MCP (Model Context Protocol) server implementing the Streamable HTTP
+transport. Serves a single endpoint `/mcp` — `GET` for SSE streams, `POST` for
+JSON-RPC tool calls.
 
-## CLI
+## Key structure
 
-```bash
-# Activate
-source .venv/bin/activate
-
-# Default MCP stdio server (for Claude Code / Claude Desktop stdio transport)
-MCP_ALLOW_ANONYMOUS_ACCESS=true memory server
-
-# HTTP REST API + dashboard (http://localhost:8000)
-MCP_ALLOW_ANONYMOUS_ACCESS=true memory server --http
-
-# Lifecycle helpers (background process management)
-memory launch
-memory stop
-memory info
-memory health
-# ...
+```
+cmd/server/main.go         — wiring: config, pgxpool, redis, HTTP server
+internal/mcp/              — MCP protocol types, registry, session, server
+internal/tools/tools.go    — tool definitions + real DB handlers (closures)
+docker/docker-compose.yml  — postgres:16-alpine + redis:7-alpine
+Taskfile.yml               — all dev commands (Task runner, not make)
 ```
 
-## Key configuration (100% env-var driven)
+## Developer commands (use `task`, not ad-hoc)
 
-Config module: `.venv/.../mcp_memory_service/config.py`
+| `task` target | What it does |
+|---|---|
+| `up` | Start postgres + redis containers |
+| `run` | `up` + `go run ./cmd/server` (reads .env) |
+| `build` | Build binary to `./bin/server` |
+| `lint` | `golangci-lint run ./...` |
+| `test` | `go test ./...` (no tests exist yet) |
+| `smoke` | `initialize` + `tools/list` via curl |
+| `psql` | `psql $DATABASE_URL` |
+| `migrate:up` | `goose -dir migrations postgres "$DATABASE_URL" up` |
+
+No `migrations/` directory exists yet. `go test ./...` passes with 0 tests.
+
+## Config (100% env-var driven via `cleanenv`)
+
+`.env` file is auto-loaded from CWD (falls back to env vars silently).
 
 | Env var | Default | Notes |
 |---|---|---|
-| `MCP_ALLOW_ANONYMOUS_ACCESS` | `false` | Set to `true` to skip auth |
-| `MCP_MEMORY_STORAGE_BACKEND` | `sqlite_vec` | Also: `cloudflare`, `hybrid`, `milvus` |
-| `MCP_MEMORY_SQLITE_PATH` | `~/Library/Application Support/mcp-memory/sqlite_vec.db` | |
-| `MCP_HTTP_HOST` / `MCP_HTTP_PORT` | `127.0.0.1` / `8000` | |
-| `MCP_SSE_HOST` / `MCP_SSE_PORT` | `127.0.0.1` / `8765` | |
-| `MCP_CONSOLIDATION_ENABLED` | `false` | Dream-inspired memory consolidation |
-| `MCP_QUALITY_SYSTEM_ENABLED` | `true` | Quality scoring for memories |
-| `MCP_OAUTH_ENABLED` | `false` | OAuth 2.1 (RS256/HS256) |
+| `ADDR` | `:8080` | Server listen address |
+| `DATABASE_URL` | `postgres://tasks:tasks@localhost:5432/tasks` | pgx/v5 pool |
+| `REDIS_URL` | `redis://localhost:6379` | go-redis/v9 |
+| `LOG_LEVEL` | `debug` | `debug` or `info` |
 
-`.env` files are auto-loaded from CWD or standard paths (config.py:36-67).
+## HTTP transport quirk
 
-## No dev tooling
+Single endpoint `/mcp`:
+- **GET /mcp** — opens an SSE stream. The first event (`endpoint`) tells the
+  client where to POST (`/mcp?sessionId=<uuid>`). Required for MCP clients that
+  use the HTTP+SSE transport.
+- **POST /mcp** — synchronous JSON-RPC. Response goes in the HTTP body (not
+  over SSE). This is what tool calls actually use.
 
-No tests, linting, typechecking, formatters, CI, or build steps. The package
-is consumed from PyPI, not developed here. To inspect behavior, read the
-installed source at `.venv/lib/python3.14/site-packages/mcp_memory_service/`.
+For Claude Desktop / OpenCode config use `"url": "http://localhost:8080/mcp"`
+(not `localhost:8080`).
 
-## Heavy ML deps
+## Tools are wired by injected DB handles
 
-`torch` / `transformers` are lazy-loaded at first use (not at import time) to
-keep CLI startup fast. Lifecycle commands (`memory launch` / `stop` / `info` /
-`health`) import only stdlib + click.
+All three tools (`get_tasks`, `get_task_counters`, `create_task`) are registered
+in `tools.RegisterAll()` as closures over the `*pgxpool.Pool` and `*redis.Client`.
+`create_task` uses a transaction + outbox row atomically.
+
+To add a tool: define the `mcp.Tool`, write the handler, call `registry.Register()`
+in `RegisterAll()`.
+
+## MCP protocol
+
+Implements: `initialize`, `initialized`, `tools/list`, `tools/call`, `ping`.
+Protocol version: `2024-11-05`. No auth, no rate limiting, no audit log yet.
+
+## No dev infra
+
+- No CI, no test fixtures, no snapshot tests
+- No pre-commit hooks
+- No gitignore beyond `.idea/` and `.env`
+- `WriteTimeout` is intentionally omitted (SSE connections are long-lived)

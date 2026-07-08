@@ -5,3 +5,5 @@
 .git
 *.pem
 *.key
+AGENTS.md
+opencode.jsonc
