@@ -12,10 +12,15 @@ vars:
 tasks:
   # ── infrastructure ───────────────────────────────────────────────────────────
 
+  build:
+    desc: build image
+    cmds:
+      - docker build . -t mcp:latest -f ./docker/Dockerfile
+
   up:
     desc: Start Postgres and Redis
     cmds:
-      - '{{.COMPOSE}} up --build -d postgres redis server'
+      - '{{.COMPOSE}} up -d postgres redis server'
 
   up-clean:
     desc: Start everything with a full no-cache rebuild
@@ -56,12 +61,6 @@ tasks:
     deps: [up]
     cmds:
       - go run ./cmd/server
-
-  build:
-    desc: Build the server binary to ./bin/server
-    cmds:
-      - mkdir -p bin
-      - go build -o bin/server ./cmd/server
 
   # ── dev utilities ────────────────────────────────────────────────────────────
 
