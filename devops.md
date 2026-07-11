@@ -41,3 +41,8 @@ volumes:
 
 ### security
 * if u `COPY . .` then `.env` files are also copied and baked into the image - insecure. use `.dockeringore`
+* test if u can access `sh` in the container 
+```shell
+docker images | grep mcp
+docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
+```
