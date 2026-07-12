@@ -20,6 +20,11 @@ tasks:
   up:
     desc: Start Postgres and Redis
     cmds:
+      - '{{.COMPOSE}} up -d postgres redis'
+
+  up-all:
+    desc: Start Postgres and Redis
+    cmds:
       - '{{.COMPOSE}} up -d postgres redis server'
 
   up-clean:
