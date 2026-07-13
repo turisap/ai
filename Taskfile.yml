@@ -1,6 +1,6 @@
 version: '3'
 
-#dotenv: ['.env'] breaks docker run
+dotenv: ['./docker/.env-docker'] # breaks docker run
 
 includes:
   smoke: ./scripts/smoke.yml
@@ -8,6 +8,7 @@ includes:
 
 vars:
   COMPOSE: docker compose -f ./docker/docker-compose.yml --env-file ./docker/.env-docker
+  CONTAINER: '{{.CONTAINER_NAME}}'
 
 tasks:
   # ── infrastructure ───────────────────────────────────────────────────────────
@@ -53,6 +54,12 @@ tasks:
     desc: Tail logs for all containers
     cmds:
       - '{{.COMPOSE}} logs -f'
+
+
+  user:
+    desc: Check if user non-root in the container
+    cmds:
+      - docker inspect {{.CONTAINER}} -format='{{"{{"}}.Config.User{{"}}"}}'
 
   ps:
     desc: Show running containers

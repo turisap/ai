@@ -19,6 +19,7 @@ services:
       - "6379:6379"
 
   server:
+    container_name: '${CONTAINER_NAME}'
     build:
       context: ../
       dockerfile: docker/Dockerfile
