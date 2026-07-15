@@ -9,6 +9,7 @@ Understand image vs container (image = class, container = instance — this will
 https://docs.docker.com/get-started/docker-concepts/building-images/understanding-image-layers/
 
 ### layers tutorial:
+
 * `docker run --name=base-container -ti ubuntu`
 * `apt update && apt install -y nodejs`
 * `node -e 'console.log("Hello world!")'`
@@ -16,9 +17,11 @@ https://docs.docker.com/get-started/docker-concepts/building-images/understandin
 * `docker image history node-base` - check history
 
 ### volumes and bind mounts
+
 * bind mounts are for development, volumes are for production
 * `docker volume ls`
 * `docker volume inspect mydata`
+
 ```yaml
 services:
   service-1:
@@ -37,12 +40,27 @@ services:
 volumes:
   shared:
 ```
+
 * network create `docker network create demo-network -d bridge`
 
 ### security
+
 * if u `COPY . .` then `.env` files are also copied and baked into the image - insecure. use `.dockeringore`
-* test if u can access `sh` in the container 
+* test if u can access `sh` in the container
+
 ```shell
 docker images | grep mcp
 docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 ```
+
+### k8s architecture
+
+#### Node components
+
+* `kube-proxy`: works on each worker node (network proxy for components like ServiceAPI). kube-proxy is a network proxy
+  that runs on each node in your cluster, implementing part of the Kubernetes Service concept.
+  kube-proxy maintains network rules on nodes.
+* `kubelet`: An agent that runs on each node in the cluster. It makes sure that containers are running in a Pod. The kubelet takes
+  a set of PodSpecs that are provided through various mechanisms and ensures that the containers described in those
+  PodSpecs are running and healthy.
+
