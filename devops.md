@@ -60,7 +60,17 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `kube-proxy`: works on each worker node (network proxy for components like ServiceAPI). kube-proxy is a network proxy
   that runs on each node in your cluster, implementing part of the Kubernetes Service concept.
   kube-proxy maintains network rules on nodes.
-* `kubelet`: An agent that runs on each node in the cluster. It makes sure that containers are running in a Pod. The kubelet takes
+* `kubelet`: An agent that runs on each node in the cluster. It makes sure that containers are running in a Pod. The
+  kubelet takes
   a set of PodSpecs that are provided through various mechanisms and ensures that the containers described in those
   PodSpecs are running and healthy.
 
+#### Control pane
+
+* `kube-apiserver`. The API server is a component of the Kubernetes control plane that exposes the Kubernetes API. The
+  API server is the
+  front end for the Kubernetes control plane.
+* `etcd`.Consistent and highly-available key value store used as Kubernetes' backing store for all cluster data.
+* `kube-scheduler` Control plane component that watches for newly created Pods with no assigned node, and selects a node
+  for them to run on.
+* `kube-controller-manager`. Control plane component that runs controller processes. Logically, each controller is a separate process, but to reduce complexity, they are all compiled into a single binary and run in a single process.
