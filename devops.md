@@ -74,3 +74,10 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `kube-scheduler` Control plane component that watches for newly created Pods with no assigned node, and selects a node
   for them to run on.
 * `kube-controller-manager`. Control plane component that runs controller processes. Logically, each controller is a separate process, but to reduce complexity, they are all compiled into a single binary and run in a single process.
+
+#### First steps
+* `kind version  && kubectl version --client`
+* `kind create cluster --name learning`
+* check `kubectl cluster-info --context kind-learning && kubectl get nodes`
+* docker ps will give u container with the whole cluster in it
+* `docker exec -it learning-control-plane crictl ps` shows all k8s elements inside that single container
