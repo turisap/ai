@@ -86,3 +86,4 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `kubectl delete pod nginx-test` 
 * `kubectl exec -it nginx-test -- sh` -- @COOL exec into a pod
 * `kubectl logs nginx-test` -- @COOL logs
+* `kubectl get pods -w` - @COOL get pods watch (watch restarts)
