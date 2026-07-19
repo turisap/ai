@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-demo
+spec:
+  initContainers:
+  - name: wait-for-it
+    image: busybox
+    command: ['sh', '-c', 'echo waiting...; sleep 5; echo done waiting']
+  containers:
+  - name: main
+    image: nginx
