@@ -81,3 +81,8 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * check `kubectl cluster-info --context kind-learning && kubectl get nodes`
 * docker ps will give u container with the whole cluster in it
 * `docker exec -it learning-control-plane crictl ps` shows all k8s elements inside that single container
+
+#### Commands
+* `kubectl delete pod nginx-test` 
+* `kubectl exec -it nginx-test -- sh` -- @COOL exec into a pod
+* `kubectl logs nginx-test` -- @COOL logs
