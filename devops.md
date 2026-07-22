@@ -73,9 +73,11 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `etcd`.Consistent and highly-available key value store used as Kubernetes' backing store for all cluster data.
 * `kube-scheduler` Control plane component that watches for newly created Pods with no assigned node, and selects a node
   for them to run on.
-* `kube-controller-manager`. Control plane component that runs controller processes. Logically, each controller is a separate process, but to reduce complexity, they are all compiled into a single binary and run in a single process.
+* `kube-controller-manager`. Control plane component that runs controller processes. Logically, each controller is a
+  separate process, but to reduce complexity, they are all compiled into a single binary and run in a single process.
 
 #### First steps
+
 * `kind version  && kubectl version --client`
 * `kind create cluster --name learning`
 * check `kubectl cluster-info --context kind-learning && kubectl get nodes`
@@ -83,7 +85,16 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `docker exec -it learning-control-plane crictl ps` shows all k8s elements inside that single container
 
 #### Commands
-* `kubectl delete pod nginx-test` 
+
+* `kubectl delete pod nginx-test`
 * `kubectl exec -it nginx-test -- sh` -- @COOL exec into a pod
 * `kubectl logs nginx-test` -- @COOL logs
 * `kubectl get pods -w` - @COOL get pods watch (watch restarts)
+* `kubectl get rs` - get replica sets
+* `kubectl get pods -l app=nginx-deploy` - get deployment's pods
+* `kubectl describe deploy nginx-deploy` - get deployment info
+
+#### Concepts
+
+* The ReplicaSet's job is simpler and narrower: just "keep exactly N pods matching this one specific template alive.".
+  if u change pod's image, there will be a new replica set created and upscaled, the old one will be down scaled
