@@ -93,8 +93,10 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `kubectl get rs` - get replica sets
 * `kubectl get pods -l app=nginx-deploy` - get deployment's pods
 * `kubectl describe deploy nginx-deploy` - get deployment info
+* `kubectl get nginx-svc` - get service with its IP
 
 #### Concepts
 
 * The ReplicaSet's job is simpler and narrower: just "keep exactly N pods matching this one specific template alive.".
   if u change pod's image, there will be a new replica set created and upscaled, the old one will be down scaled
+* 
