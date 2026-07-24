@@ -99,4 +99,9 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 
 * The ReplicaSet's job is simpler and narrower: just "keep exactly N pods matching this one specific template alive.".
   if u change pod's image, there will be a new replica set created and upscaled, the old one will be down scaled
-* 
+* ```
+  Type	Reachable from	Typical use
+  ClusterIP (default)	Inside cluster only	Internal service-to-service traffic — e.g. mcp-task-server → Postgres
+  NodePort	Any node's IP at a static high port (30000-32767)	Rarely used directly in prod; mostly a building block
+  LoadBalancer	External internet, via cloud provider's LB	Public-facing services — this is what Yandex Cloud provisions when you set this type on a real cluster
+``` 
