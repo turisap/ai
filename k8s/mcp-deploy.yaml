@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-task-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mcp-task-server
+  template:
+    metadata:
+      labels:
+        app: mcp-task-server
+    spec:
+      containers:
+      - name: server
+        image: mcp:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ADDR
+          value: ":8080"
+        - name: DATABASE_URL
+          value: "postgres://tasks:tasks@postgres:5432/tasks"
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: MCP_API_KEY
+          value: "tyau-tyau"
