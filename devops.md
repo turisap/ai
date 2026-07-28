@@ -94,6 +94,7 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `kubectl get pods -l app=nginx-deploy` - get deployment's pods
 * `kubectl describe deploy nginx-deploy` - get deployment info
 * `kubectl get nginx-svc` - get service with its IP
+* `kubectl describe pod mcp-task-server-8455c7b476-rlfqw` - pod info
 
 #### Concepts
 
