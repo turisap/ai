@@ -20,7 +20,10 @@ spec:
         - containerPort: 8080
         env:
           - name: ADDR
-            value: ":8080"
+            valueFrom:
+              configMapKeyRef:
+                key: ADDR
+                name: mcp-task-server-config
           - name: MCP_API_KEY
             value: "tyau-tyau"
           - name: DATABASE_URL
