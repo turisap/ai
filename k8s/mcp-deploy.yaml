@@ -22,11 +22,20 @@ spec:
           - name: ADDR
             valueFrom:
               configMapKeyRef:
-                key: ADDR
                 name: mcp-task-server-config
-          - name: MCP_API_KEY
-            value: "tyau-tyau"
+                key: ADDR
           - name: DATABASE_URL
-            value: "postgres://tasks:tasks@postgres:5432/tasks"
+            valueFrom:
+              secretKeyRef:
+                name: mcp-task-server-secrets
+                key: DATABASE_URL
           - name: REDIS_URL
-            value: "redis://redis:6379"
+            valueFrom:
+              secretKeyRef:
+                name: mcp-task-server-secrets
+                key: REDIS_URL
+          - name: MCP_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: mcp-task-server-secrets
+                key: MCP_API_KEY
