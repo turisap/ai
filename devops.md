@@ -109,3 +109,8 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
   LoadBalancer	External internet, via cloud provider's LB	Public-facing services — this is what Yandex Cloud provisions when you set this type on a real cluster
 ``` 
 * docs `kubectl explain deployment.spec.strategy.rollingUpdate ` 
+
+#### Sealed secrets
+* `brew install kubeseal`
+* `kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/controller.yaml`
+* `kubectl get pods -n kube-system -l name=sealed-secrets-controller` confirm running
