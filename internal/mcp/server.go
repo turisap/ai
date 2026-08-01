@@ -6,6 +6,8 @@ import (
 	"log/slog"
 	"net/http"
 	"sync"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const protocolVersion = "2024-11-05"
@@ -28,10 +30,17 @@ func NewServer(name, version, apiKey string, registry *Registry, ReqApiKey bool)
 }
 
 // Handler returns an http.Handler to mount at your chosen path (e.g. /mcp).
-func (s *Server) Handler() http.Handler {
+func (s *Server) Handler(pool *pgxpool.Pool) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/mcp", s.handleMCP)
 	mux.HandleFunc("/health", s.handleHealth)
+	mux.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
+		if err := pool.Ping(r.Context()); err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
 
 	return s.authMiddleware(mux)
 }

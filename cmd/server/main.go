@@ -82,7 +82,7 @@ func main() {
 
 	httpSrv := &http.Server{
 		Addr:        cfg.Addr,
-		Handler:     srv.Handler(),
+		Handler:     srv.Handler(db),
 		ReadTimeout: 10 * time.Second,
 		// WriteTimeout intentionally omitted — SSE connections are long-lived.
 		IdleTimeout: 120 * time.Second,
