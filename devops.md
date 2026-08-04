@@ -118,10 +118,17 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/controller.yaml`
 * `kubectl get pods -n kube-system -l name=sealed-secrets-controller` confirm running
 
-### Namespaces
+#### Namespaces
 
 What they actually are: a way to partition objects within a single cluster into logically separate groups — think of it
 as a folder structure for cluster resources, not a hard security or performance boundary.
 
 * `kubectl create namespace mcp-dev`
 * `kubectl get pods -n mcp-dev`
+* `kubectl config set-context --current --namespace=mcp-dev` - @COOL sets the default namespace
+
+#### Storage
+PersistentVolume (PV): a piece of actual storage in the cluster — could be a local disk, a cloud disk (Yandex Cloud has its own CSI driver for this), an NFS share. Cluster-scoped, not namespaced.
+PersistentVolumeClaim (PVC): a namespaced request for storage — "I need 5Gi, ReadWriteOnce" — that gets matched/bound to an available PV.
+* `kubectl get pvc -n mcp-dev`
+* `kubectl get pv`
