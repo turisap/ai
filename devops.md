@@ -128,7 +128,32 @@ as a folder structure for cluster resources, not a hard security or performance 
 * `kubectl config set-context --current --namespace=mcp-dev` - @COOL sets the default namespace
 
 #### Storage
-PersistentVolume (PV): a piece of actual storage in the cluster — could be a local disk, a cloud disk (Yandex Cloud has its own CSI driver for this), an NFS share. Cluster-scoped, not namespaced.
-PersistentVolumeClaim (PVC): a namespaced request for storage — "I need 5Gi, ReadWriteOnce" — that gets matched/bound to an available PV.
+
+PersistentVolume (PV): a piece of actual storage in the cluster — could be a local disk, a cloud disk (Yandex Cloud has
+its own CSI driver for this), an NFS share. Cluster-scoped, not namespaced.
+PersistentVolumeClaim (PVC): a namespaced request for storage — "I need 5Gi, ReadWriteOnce" — that gets matched/bound to
+an available PV.
+
 * `kubectl get pvc -n mcp-dev`
 * `kubectl get pv`
+
+### Troubleshooting
+
+#### Wrong image (old image for some reason running in the pod)
+
+* `docker images mcp:latest --no-trunc` your image SHA
+
+```shell
+mcp          latest    sha256:b7fe87558efd21d1e36a431c9147884d1f07751f4fea1af63181a612643d9fb4   6 minutes ago   17.9MB
+```
+
+* `docker exec -it learning-control-plane crictl images | grep mcp`
+  what is kind running
+
+```
+docker.io/library/import-2026-07-31@sha256:8a732554be26cdf44acfe277473c040a8c0f6c7199ea05e2b89cdeb3ec1d0c4b%
+```
+if there is a mismatch - `docker build --no-cache -t mcp:latest -f docker/Dockerfile .`
+`kind load docker-image mcp:latest --name learning`
+`kubectl rollout restart deployment/mcp-task-server -n mcp-dev
+kubectl rollout status deployment/mcp-task-server -n mcp-dev`
