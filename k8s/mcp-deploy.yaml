@@ -42,9 +42,9 @@ spec:
         resources:
           requests: # how much a node should have resources to schedule a pod
             cpu: "50m" # 50 milli CPU
-            memory: "1Mi"
-#            memory: "64Mi"
+#            memory: "1Mi"
+            memory: "64Mi"
           limits: # how much resources a node should have to run a pod (upper limits for CPU and OOM killed for memory)
             cpu: "200m"
-            memory: "2Mi"
-#            memory: "128Mi"
+#            memory: "2Mi"
+            memory: "128Mi"
