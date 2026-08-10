@@ -153,7 +153,13 @@ mcp          latest    sha256:b7fe87558efd21d1e36a431c9147884d1f07751f4fea1af631
 ```
 docker.io/library/import-2026-07-31@sha256:8a732554be26cdf44acfe277473c040a8c0f6c7199ea05e2b89cdeb3ec1d0c4b%
 ```
+
 if there is a mismatch - `docker build --no-cache -t mcp:latest -f docker/Dockerfile .`
 `kind load docker-image mcp:latest --name learning`
 `kubectl rollout restart deployment/mcp-task-server -n mcp-dev
 kubectl rollout status deployment/mcp-task-server -n mcp-dev`
+
+#### Cleanup habit
+
+* check all resources in the namespace `kubectl get all -n mcp-dev`
+* `kubectl get pods -n default | grep mcp` check whether there are pods for mpc in the default namespace (conflicting)
