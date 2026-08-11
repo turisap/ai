@@ -138,6 +138,7 @@ an available PV.
 * `kubectl get pv`
 
 ### Troubleshooting
+* `kubectl run test --image=busybox -it --rm -n default -- sh` - busybox image with all linux commands
 
 #### Wrong image (old image for some reason running in the pod)
 
@@ -163,3 +164,7 @@ kubectl rollout status deployment/mcp-task-server -n mcp-dev`
 
 * check all resources in the namespace `kubectl get all -n mcp-dev`
 * `kubectl get pods -n default | grep mcp` check whether there are pods for mpc in the default namespace (conflicting)
+
+#### Quota exceeded
+* `kubectl edit resourcequota mcp-dev-quota -n mcp-dev` - edit in place or via `kubectl apply` to your quota yaml
+* running a test pod from a different namespace with no quota `kubectl run dns-test --image=busybox -it --rm -n default -- nslookup postgres.mcp-dev.svc.cluster.local`
