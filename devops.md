@@ -168,3 +168,9 @@ kubectl rollout status deployment/mcp-task-server -n mcp-dev`
 #### Quota exceeded
 * `kubectl edit resourcequota mcp-dev-quota -n mcp-dev` - edit in place or via `kubectl apply` to your quota yaml
 * running a test pod from a different namespace with no quota `kubectl run dns-test --image=busybox -it --rm -n default -- nslookup postgres.mcp-dev.svc.cluster.local`
+
+#### Ingress controller (nginx)
+* `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml`
+* `kubectl get all -n ingress-nginx`
+* `kubectl get pods -n ingress-nginx -w`
+* `kubectl get namespace ingress-nginx`
