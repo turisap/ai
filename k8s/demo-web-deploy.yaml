@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demo-web
+  name: demo-web
+  namespace: mcp-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-web
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: demo-web
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "32Mi"
+          limits:
+            cpu: "50m"
+            memory: "64Mi"
+status: {}
