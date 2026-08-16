@@ -174,3 +174,14 @@ kubectl rollout status deployment/mcp-task-server -n mcp-dev`
 * `kubectl get all -n ingress-nginx`
 * `kubectl get pods -n ingress-nginx -w`
 * `kubectl get namespace ingress-nginx`
+* rewrite target (like krakend backends) ```shell
+No rewrite annotation	/api/healthz	/api/healthz (unchanged)
+rewrite-target: / (plain)	/api/healthz	/ (everything after prefix discarded)
+Capture-group regex + rewrite-target: /$2	/api/healthz	/healthz (prefix stripped, rest preserved)
+
+annotations:
+nginx.ingress.kubernetes.io/rewrite-target: /$2
+...
+- path: /api(/|$)(.*)
+  pathType: ImplementationSpecific
+```
