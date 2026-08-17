@@ -179,9 +179,15 @@ No rewrite annotation	/api/healthz	/api/healthz (unchanged)
 rewrite-target: / (plain)	/api/healthz	/ (everything after prefix discarded)
 Capture-group regex + rewrite-target: /$2	/api/healthz	/healthz (prefix stripped, rest preserved)
 
+```
 annotations:
 nginx.ingress.kubernetes.io/rewrite-target: /$2
 ...
 - path: /api(/|$)(.*)
   pathType: ImplementationSpecific
 ```
+
+#### Helm
+* prep 
+  * `brew install helm && helm version`
+  * `helm create mcp-task-server-chart && tree mcp-task-server-chart`
