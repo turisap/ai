@@ -18,3 +18,11 @@ resources:
 
 config:
   addr: ":8080"
+
+quota:
+  requests:
+     cpu: "500m"
+     memory: "512Mi"
+  limits:
+     cpu: "2"
+     memory: "16Gi"
