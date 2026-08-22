@@ -37,6 +37,7 @@ podAnnotations: {}
 # This is for setting Kubernetes Labels to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels: {}
+#  - piu
 
 podSecurityContext: {}
   # fsGroup: 2000
@@ -143,7 +144,8 @@ autoscaling:
 
 # Additional volumes on the output Deployment definition.
 volumes: []
-  # - name: foo
+#volumes:
+#   - name: foo
   #   secret:
   #     secretName: mysecret
   #     optional: false

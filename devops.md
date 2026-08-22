@@ -191,3 +191,4 @@ nginx.ingress.kubernetes.io/rewrite-target: /$2
 * prep 
   * `brew install helm && helm version`
   * `helm create mcp-task-server-chart && tree mcp-task-server-chart`
+* @TODO @COOL `helm template mcp-task-server-chart` - see what yaml will be produced by rendering
