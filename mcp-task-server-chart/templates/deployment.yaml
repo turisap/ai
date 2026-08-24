@@ -28,17 +28,17 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-secrets
+                  name: mcp-task-server-secrets
                   key: DATABASE_URL
             - name: REDIS_URL
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-secrets
+                  name: mcp-task-server-secrets
                   key: REDIS_URL
             - name: MCP_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-secrets
+                  name: mcp-task-server-secrets
                   key: MCP_API_KEY
           livenessProbe:
             httpGet:

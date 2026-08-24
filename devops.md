@@ -117,6 +117,11 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `brew install kubeseal`
 * `kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/controller.yaml`
 * `kubectl get pods -n kube-system -l name=sealed-secrets-controller` confirm running
+reseal
+```
+kubeseal --format yaml --namespace mcp-dev < k8s/mcp-secret.yaml > k8s/mcp-sealed-secret.yaml
+kubectl apply -f k8s/mcp-sealed-secret.yaml
+```
 
 #### Namespaces
 
@@ -138,6 +143,7 @@ an available PV.
 * `kubectl get pv`
 
 ### Troubleshooting
+
 * `kubectl run test --image=busybox -it --rm -n default -- sh` - busybox image with all linux commands
 
 #### Wrong image (old image for some reason running in the pod)
@@ -166,18 +172,22 @@ kubectl rollout status deployment/mcp-task-server -n mcp-dev`
 * `kubectl get pods -n default | grep mcp` check whether there are pods for mpc in the default namespace (conflicting)
 
 #### Quota exceeded
+
 * `kubectl edit resourcequota mcp-dev-quota -n mcp-dev` - edit in place or via `kubectl apply` to your quota yaml
-* running a test pod from a different namespace with no quota `kubectl run dns-test --image=busybox -it --rm -n default -- nslookup postgres.mcp-dev.svc.cluster.local`
+* running a test pod from a different namespace with no quota
+  `kubectl run dns-test --image=busybox -it --rm -n default -- nslookup postgres.mcp-dev.svc.cluster.local`
 
 #### Ingress controller (nginx)
-* `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml`
+
+*
+`kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml`
 * `kubectl get all -n ingress-nginx`
 * `kubectl get pods -n ingress-nginx -w`
 * `kubectl get namespace ingress-nginx`
 * rewrite target (like krakend backends) ```shell
-No rewrite annotation	/api/healthz	/api/healthz (unchanged)
-rewrite-target: / (plain)	/api/healthz	/ (everything after prefix discarded)
-Capture-group regex + rewrite-target: /$2	/api/healthz	/healthz (prefix stripped, rest preserved)
+  No rewrite annotation /api/healthz /api/healthz (unchanged)
+  rewrite-target: / (plain)    /api/healthz / (everything after prefix discarded)
+  Capture-group regex + rewrite-target: /$2 /api/healthz /healthz (prefix stripped, rest preserved)
 
 ```
 annotations:
@@ -188,7 +198,8 @@ nginx.ingress.kubernetes.io/rewrite-target: /$2
 ```
 
 #### Helm
-* prep 
-  * `brew install helm && helm version`
-  * `helm create mcp-task-server-chart && tree mcp-task-server-chart`
+
+* prep
+    * `brew install helm && helm version`
+    * `helm create mcp-task-server-chart && tree mcp-task-server-chart`
 * @TODO @COOL `helm template mcp-task-server-chart` - see what yaml will be produced by rendering
