@@ -1,4 +1,4 @@
-{{/*@TODO move all stuff from k8s to mcp-task-serv-chart*/}}
+# set and srv
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -54,3 +54,16 @@ spec:
         resources:
           requests:
             storage: 1Gi
+---
+# srv
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgres
+  namespace: {{ .Release.Namespace }}
+spec:
+  clusterIP: None
+  selector:
+    app: {{ .Release.Name }}-postgres
+  ports:
+    - port: 5432

@@ -16,8 +16,20 @@ resources:
     cpu: "200m"
     memory: "128Mi"
 
+redis:
+  resources:
+    requests:
+      cpu: "10m"
+      memory: "32Mi"
+    limits:
+      cpu: "100m"
+      memory: "64Mi"
+
 config:
   addr: ":8080"
+
+ingress:
+  host: mcp.local
 
 quota:
   requests:
