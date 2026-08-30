@@ -1,0 +1,8 @@
+replicaCount: 1
+
+image:
+  tag: latest
+  pullPolicy: Never
+
+ingress:
+  host: mcp.local

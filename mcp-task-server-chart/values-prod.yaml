@@ -1,0 +1,16 @@
+replicaCount: 3
+
+image:
+  tag: "v1.2.3"
+  pullPolicy: IfNotPresent
+
+ingress:
+  host: api.yourcompany.com
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
