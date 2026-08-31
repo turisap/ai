@@ -1,0 +1,41 @@
+stages:
+  - lint
+  - test
+  - build
+
+variables:
+  GO_VERSION: "1.25"
+
+lint:
+  stage: lint
+  image: golangci/golangci-lint:latest
+  script:
+    - golangci-lint run ./...
+
+test:
+  stage: test
+  image: golang:${GO_VERSION}
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .go/pkg/mod
+  variables:
+    GOPATH: "$CI_PROJECT_DIR/.go"
+  script:
+    - go test ./... -v
+
+build:
+  stage: build
+  image: golang:${GO_VERSION}
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .go/pkg/mod
+  variables:
+    GOPATH: "$CI_PROJECT_DIR/.go"
+  script:
+    - CGO_ENABLED=0 go build -o mcp-task-server ./cmd/server
+  artifacts:
+    paths:
+      - mcp-task-server
+    expire_in: 1 hour
