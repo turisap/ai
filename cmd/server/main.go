@@ -68,7 +68,7 @@ func main() {
 		os.Exit(1)
 	}
 	rdb := redis.NewClient(redisOpts)
-	defer rdb.Close()
+	defer func() { _ = rdb.Close() }()
 	if err := rdb.Ping(ctx).Err(); err != nil {
 		slog.Error("redis ping failed", "err", err)
 		os.Exit(1)

@@ -16,7 +16,7 @@ func (s *Server) authMiddleware(next http.Handler) http.Handler {
 		if key == "" || key != s.apiKey {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(ErrorResponse(nil, ErrInvalidRequest, "unauthorized"))
+			_ = json.NewEncoder(w).Encode(ErrorResponse(nil, ErrInvalidRequest, "unauthorized"))
 			return
 		}
 		next.ServeHTTP(w, r)

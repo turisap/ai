@@ -185,7 +185,7 @@ func handleCreateTaskWith(db *pgxpool.Pool) mcp.HandlerFunc {
 		if err != nil {
 			return mcp.ErrorResult("tx begin: " + err.Error()), nil
 		}
-		defer tx.Rollback(ctx)
+		defer func() { _ = tx.Rollback(ctx) }()
 
 		_, err = tx.Exec(ctx,
 			`INSERT INTO tasks (id, store_id, title, assignee_id, status, created_at)
