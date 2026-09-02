@@ -45,6 +45,7 @@ package:
   stage: package
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [ "" ]
