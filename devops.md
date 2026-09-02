@@ -117,7 +117,8 @@ docker run --rm --entrypoint sh mcp -c "echo test" 2>&1
 * `brew install kubeseal`
 * `kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.1/controller.yaml`
 * `kubectl get pods -n kube-system -l name=sealed-secrets-controller` confirm running
-reseal
+  reseal
+
 ```
 kubeseal --format yaml --namespace mcp-dev < k8s/mcp-secret.yaml > k8s/mcp-sealed-secret.yaml
 kubectl apply -f k8s/mcp-sealed-secret.yaml
@@ -180,7 +181,9 @@ kubectl rollout status deployment/mcp-task-server -n mcp-dev`
 #### Ingress controller (nginx)
 
 *
+
 `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml`
+
 * `kubectl get all -n ingress-nginx`
 * `kubectl get pods -n ingress-nginx -w`
 * `kubectl get namespace ingress-nginx`
@@ -203,4 +206,13 @@ nginx.ingress.kubernetes.io/rewrite-target: /$2
     * `brew install helm && helm version`
     * `helm create mcp-task-server-chart && tree mcp-task-server-chart`
 * @TODO @COOL `helm template mcp-task-server-chart` - see what yaml will be produced by rendering
-* render templates with values `helm template mcp-task-server-chart -f mcp-task-server-chart/values-dev.yaml --debug 2>&1 | head -30`
+* render templates with values
+  `helm template mcp-task-server-chart -f mcp-task-server-chart/values-dev.yaml --debug 2>&1 | head -30`
+
+#### Gitlab
+* pull image from gitlab after a build
+```
+docker login registry.gitlab.com
+docker pull registry.gitlab.com/<your-path>:latest
+docker run --rm registry.gitlab.com/<your-path>:latest
+```
