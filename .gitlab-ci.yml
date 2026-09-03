@@ -3,6 +3,7 @@ stages:
   - test
   - build
   - package
+  - update-manifest
 
 variables:
   GO_VERSION: "1.25"
@@ -56,3 +57,22 @@ package:
       --dockerfile "${CI_PROJECT_DIR}/docker/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
       --destination "${CI_REGISTRY_IMAGE}:latest"
+
+update-manifest:
+  stage: package
+  needs: ["package"]
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git yq
+  script:
+    - |
+      git config user.email "ci@gitlab.com"
+      git config user.name "GitLab CI"
+      git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+      git checkout main
+      yq -i ".image.tag = \"${CI_COMMIT_SHORT_SHA}\"" mcp-task-server-chart/values-dev.yaml
+      git add mcp-task-server-chart/values-dev.yaml
+      git commit -m "ci: bump image tag to ${CI_COMMIT_SHORT_SHA} [skip ci]"
+      git push origin main
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
