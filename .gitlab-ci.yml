@@ -68,7 +68,7 @@ update-manifest:
     - |
       git config user.email "ci@gitlab.com"
       git config user.name "GitLab CI"
-      git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+      git remote set-url origin "https://oauth2:${GIT_PUSH_TOKEN}:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
       git checkout main
       yq -i ".image.tag = \"${CI_COMMIT_SHORT_SHA}\"" mcp-task-server-chart/values-dev.yaml
       git add mcp-task-server-chart/values-dev.yaml
