@@ -216,3 +216,16 @@ docker login registry.gitlab.com
 docker pull registry.gitlab.com/<your-path>:latest
 docker run --rm registry.gitlab.com/<your-path>:latest
 ```
+
+### ArgoCD
+```
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl get pods -n argocd -w
+```
+* port forward for UI access `kubectl port-forward svc/argocd-server -n argocd 8080:443`
+* ingress for argo pods 
+```
+kubectl apply -f argocd-ingress.yaml
+echo "127.0.0.1 argocd.local" | sudo tee -a /etc/hosts
+```
