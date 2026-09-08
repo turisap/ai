@@ -1,8 +1,6 @@
 replicaCount: 1
-
 image:
-  tag: latest
+  tag: 86c5650c
   pullPolicy: Never
-
 ingress:
   host: mcp.local
