@@ -171,6 +171,14 @@ kubectl rollout status deployment/mcp-task-server -n mcp-dev`
 
 * check all resources in the namespace `kubectl get all -n mcp-dev`
 * `kubectl get pods -n default | grep mcp` check whether there are pods for mpc in the default namespace (conflicting)
+*
+`kubectl delete deployment,statefulset,service,replicaset,configmap,networkpolicy,resourcequota -n mcp-dev -l 'app in (release-name,release-name-postgres,release-name-redis)'`
+* ```
+  for kind in deployment statefulset service configmap networkpolicy resourcequota; do
+  kubectl get $kind -n mcp-dev -o name | grep '/release-name' | xargs -r kubectl delete -n mcp-dev
+  done
+
+```
 
 #### Quota exceeded
 
@@ -193,11 +201,14 @@ kubectl rollout status deployment/mcp-task-server -n mcp-dev`
   Capture-group regex + rewrite-target: /$2 /api/healthz /healthz (prefix stripped, rest preserved)
 
 ```
+
 annotations:
 nginx.ingress.kubernetes.io/rewrite-target: /$2
 ...
+
 - path: /api(/|$)(.*)
   pathType: ImplementationSpecific
+
 ```
 
 #### Helm
@@ -214,25 +225,31 @@ nginx.ingress.kubernetes.io/rewrite-target: /$2
 * pull image from gitlab after a build
 
 ```
+
 docker login registry.gitlab.com
 docker pull registry.gitlab.com/<your-path>:latest
 docker run --rm registry.gitlab.com/<your-path>:latest
+
 ```
 
 ### ArgoCD
 
 ```
+
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl get pods -n argocd -w
+
 ```
 
 * port forward for UI access `kubectl port-forward svc/argocd-server -n argocd 8080:443`
 * ingress for argo pods
 
 ```
+
 kubectl apply -f argocd-ingress.yaml
 echo "127.0.0.1 argocd.local" | sudo tee -a /etc/hosts
+
 ```
 
 * `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
