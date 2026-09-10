@@ -210,7 +210,6 @@ nginx.ingress.kubernetes.io/rewrite-target: /$2
   pathType: ImplementationSpecific
 
 ```
-
 #### Helm
 
 * prep
@@ -219,37 +218,37 @@ nginx.ingress.kubernetes.io/rewrite-target: /$2
 * @TODO @COOL `helm template mcp-task-server-chart` - see what yaml will be produced by rendering
 * render templates with values
   `helm template mcp-task-server-chart -f mcp-task-server-chart/values-dev.yaml --debug 2>&1 | head -30`
+```
 
 #### Gitlab
 
 * pull image from gitlab after a build
 
-```
-
 docker login registry.gitlab.com
 docker pull registry.gitlab.com/<your-path>:latest
 docker run --rm registry.gitlab.com/<your-path>:latest
-
 ```
 
 ### ArgoCD
-
 ```
-
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 kubectl get pods -n argocd -w
-
 ```
 
 * port forward for UI access `kubectl port-forward svc/argocd-server -n argocd 8080:443`
 * ingress for argo pods
-
-```
+```shell
 
 kubectl apply -f argocd-ingress.yaml
 echo "127.0.0.1 argocd.local" | sudo tee -a /etc/hosts
-
 ```
 
 * `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
+* pull secret ```
+kubectl create secret docker-registry gitlab-registry-cred \
+  --docker-server=registry.gitlab.com \
+  --docker-username=turisap \
+  --docker-password=<a-token-with-read_registry-scope> \
+  --namespace=mcp-dev
+ ``` 
