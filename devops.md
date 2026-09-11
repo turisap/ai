@@ -252,3 +252,79 @@ kubectl create secret docker-registry gitlab-registry-cred \
   --docker-password=<a-token-with-read_registry-scope> \
   --namespace=mcp-dev
  ``` 
+
+```
+1. You: git push (code change to main)
+   │
+   ▼
+2. GitLab detects the push, starts a pipeline
+   │
+   ▼
+3. STAGE: lint     → golangci-lint runs against your Go code
+   │             (fails fast here if code quality issues exist)
+   ▼
+4. STAGE: test     → go test ./... runs your test suite
+   │             (fails fast here if tests break)
+   ▼
+5. STAGE: build    → compiles the Go binary, stores as CI artifact
+   │             (mostly a sanity check at this point;
+   │              the real build happens in the next stage)
+   ▼
+6. STAGE: package  → Kaniko builds a real container image from your
+   │             Dockerfile, tags it with ${CI_COMMIT_SHORT_SHA},
+   │             pushes both that tag and :latest to GitLab's
+   │             Container Registry (registry.gitlab.com/...)
+   │
+   ▼
+7. JOB: update-manifest → checks out main, uses yq to edit
+   │                  mcp-task-server-chart/values-dev.yaml,
+   │                  changing image.tag to the new commit SHA,
+   │                  commits with [skip ci], pushes back to main
+   │                  using GIT_PUSH_TOKEN
+   │
+   ▼
+   >>> Pipeline is done. Nothing has touched your cluster yet. <
+   │
+   ▼
+8. ArgoCD (running continuously in your kind cluster, independent
+   of the pipeline) periodically polls (or gets notified via webhook)
+   the Git repo it's configured to watch — specifically
+   mcp-task-server-chart/ on the main branch
+   │
+   ▼
+9. ArgoCD notices values-dev.yaml changed (the commit from step 7)
+   │
+   ▼
+10. ArgoCD runs the Helm templating itself — same as your local
+    `helm template` command — using the chart + values-dev.yaml,
+    producing the full set of Kubernetes manifests
+    │
+    ▼
+11. ArgoCD compares this freshly-rendered "desired state" against
+    what's actually running in the mcp-dev namespace right now
+    (this is the reconciliation-loop concept from Week 2, applied
+    at the whole-application level instead of a single controller)
+    │
+    ▼
+12. ArgoCD applies the diff — in this case, the Deployment's
+    pod template changed (new image tag), so it triggers a normal
+    Kubernetes rolling update, exactly like your manual
+    `kubectl rollout restart` from Week 3, except now it's the
+    image tag itself changing, not just a restart annotation
+    │
+    ▼
+13. Kubernetes' own Deployment controller takes over from here —
+    creates a new ReplicaSet, scales it up, scales the old one
+    down, respecting maxSurge/maxUnavailable, running your
+    liveness/readiness probes throughout (Week 4)
+    │
+    ▼
+14. New pods pull the new image from registry.gitlab.com using
+    imagePullSecrets (the piece we just fixed), start up, connect
+    to Postgres/Redis (Week 5), pass their readiness checks,
+    and start receiving traffic via the Service/Ingress (Week 6)
+    │
+    ▼
+15. ArgoCD's UI/status flips to "Synced" + "Healthy" —
+    the cluster now matches what Git says it should be
+```
