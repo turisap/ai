@@ -77,3 +77,14 @@ update-manifest:
       git push origin main
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+
+scan:
+  stage: package
+  needs: ["package"]
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  script:
+    - trivy image --exit-code 1 --severity CRITICAL "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
