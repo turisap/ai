@@ -245,7 +245,8 @@ echo "127.0.0.1 argocd.local" | sudo tee -a /etc/hosts
 ```
 
 * `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
-* pull secret ```
+* pull secret 
+```
 kubectl create secret docker-registry gitlab-registry-cred \
   --docker-server=registry.gitlab.com \
   --docker-username=turisap \
@@ -253,7 +254,6 @@ kubectl create secret docker-registry gitlab-registry-cred \
   --namespace=mcp-dev
  ``` 
 
-```
 1. You: git push (code change to main)
    │
    ▼
@@ -327,4 +327,6 @@ kubectl create secret docker-registry gitlab-registry-cred \
     ▼
 15. ArgoCD's UI/status flips to "Synced" + "Healthy" —
     the cluster now matches what Git says it should be
-```
+
+### Security
+* scan for CVEs (vulnerability) `trivy image registry.gitlab.com/turisap/k8s-mcp:latest` 
