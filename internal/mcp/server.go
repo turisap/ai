@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const protocolVersion = "2024-11-05"
@@ -41,6 +42,8 @@ func (s *Server) Handler(pool *pgxpool.Pool) http.Handler {
 		}
 		w.WriteHeader(http.StatusOK)
 	})
+
+	mux.Handle("/metrics", promhttp.Handler())
 
 	return s.authMiddleware(mux)
 }
