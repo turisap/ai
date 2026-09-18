@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  tag: "91121749"
+  tag: "2bc1aa6e"
   repository: registry.gitlab.com/turisap/k8s-mcp
   pullPolicy: IfNotPresent
 ingress:
