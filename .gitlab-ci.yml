@@ -85,6 +85,11 @@ scan:
     name: aquasec/trivy:latest
     entrypoint: [""]
   script:
-    - trivy image --exit-code 1 --severity CRITICAL "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
+    - trivy image
+        --username "${CI_REGISTRY_USER}"
+        --password "${CI_REGISTRY_PASSWORD}"
+        --exit-code 1
+        --severity CRITICAL
+        "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
