@@ -6,6 +6,7 @@ metadata:
 spec:
   serviceAccountName: prometheus-operator
   serviceMonitorSelector: {}
+  serviceMonitorNamespaceSelector: {}
   retention: {{ .Values.prometheus.retention | quote }}
   storage:
     volumeClaimTemplate:
