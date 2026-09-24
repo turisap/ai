@@ -3,6 +3,8 @@ package mcp
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func (s *Server) authMiddleware(next http.Handler) http.Handler {
@@ -21,4 +23,29 @@ func (s *Server) authMiddleware(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+func MetricsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		rw := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
+
+		next.ServeHTTP(rw, r)
+
+		duration := time.Since(start).Seconds()
+		status := strconv.Itoa(rw.status)
+
+		RequestsTotal.WithLabelValues(r.Method, r.URL.Path, status).Inc()
+		RequestDuration.WithLabelValues(r.Method, r.URL.Path).Observe(duration)
+	})
+}
+
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (r *statusRecorder) WriteHeader(status int) {
+	r.status = status
+	r.ResponseWriter.WriteHeader(status)
 }

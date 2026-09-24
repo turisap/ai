@@ -45,7 +45,7 @@ func (s *Server) Handler(pool *pgxpool.Pool) http.Handler {
 
 	mux.Handle("/metrics", promhttp.Handler())
 
-	return s.authMiddleware(mux)
+	return MetricsMiddleware(s.authMiddleware(mux))
 }
 
 // handleMCP dispatches GET (SSE stream) and POST (JSON-RPC message).
