@@ -4,6 +4,10 @@ metadata:
   name: main
   namespace: {{ .Release.Namespace }}
 spec:
+  ruleSelector:
+    matchLabels:
+      prometheus: main
+  ruleNamespaceSelector: { }
   serviceAccountName: prometheus-operator
   serviceMonitorSelector: {}
   serviceMonitorNamespaceSelector: {}
