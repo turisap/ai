@@ -330,3 +330,11 @@ kubectl create secret docker-registry gitlab-registry-cred \
 
 ### Security
 * scan for CVEs (vulnerability) `trivy image registry.gitlab.com/turisap/k8s-mcp:latest` 
+
+### Prom
+* ```shell
+  kubectl create namespace monitoring
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+kubectl get pods -n monitoring -w
+```
