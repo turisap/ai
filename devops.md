@@ -338,3 +338,11 @@ kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheu
 kubectl apply --server-side -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
 kubectl get pods -n monitoring -w
 ```
+
+### Grafana
+```
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install grafana grafana/grafana -n monitoring --set adminPassword=admin
+kubectl get pods -n monitoring -w
+```
