@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: main
+  namespace: {{ .Release.Namespace }}
+spec:
+  serviceAccountName: prometheus-operator
+  serviceMonitorSelector: {}
+  retention: {{ .Values.prometheus.retention | quote }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.prometheus.storage | quote }}
+  resources:
+    {{- toYaml .Values.prometheus.resources | nindent 4 }}
