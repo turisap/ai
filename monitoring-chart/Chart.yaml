@@ -1,0 +1,5 @@
+apiVersion: v2
+name: monitoring-chart
+description: Shared observability infrastructure — Prometheus and Grafana access
+version: 0.1.0
+appVersion: "1.0"
