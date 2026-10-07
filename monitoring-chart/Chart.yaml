@@ -1,5 +1,10 @@
+# monitoring-chart/Chart.yaml
 apiVersion: v2
 name: monitoring-chart
-description: Shared observability infrastructure — Prometheus and Grafana access
+description: Shared observability infrastructure
 version: 0.1.0
 appVersion: "1.0"
+dependencies:
+  - name: grafana
+    version: "8.x.x"
+    repository: https://grafana.github.io/helm-charts
