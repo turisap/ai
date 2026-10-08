@@ -1,3 +1,11 @@
+grafana:
+  adminPassword: admin
+  persistence:
+    enabled: true
+    size: 1Gi
+  ingress:
+    host: grafana.local
+
 prometheus:
   retention: 15d
   storage: 5Gi
@@ -8,6 +16,3 @@ prometheus:
     limits:
       cpu: "500m"
       memory: "512Mi"
-
-grafana:
-  host: grafana.local
