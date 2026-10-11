@@ -5,19 +5,15 @@ schema: spec-driven
 # Include constraints an agent cannot infer by reading the code.
 # Keep general project documentation and discoverable codebase facts out.
 # Example:
-#   context: |
-#     Designs and tasks must cover Windows, macOS, and Linux
-#     Write all artifacts in Spanish
+context: |
+  A Go MCP (Model Context Protocol) server implementing the Streamable HTTP
+  transport. Serves a single endpoint `/mcp` — `GET` for SSE streams, `POST` for
+  JSON-RPC tool calls.
+
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
 # Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
 
 # Per-operation guidance (optional)
 # Add advisory guidance for how apply and archive work should be conducted.
