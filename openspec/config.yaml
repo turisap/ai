@@ -14,6 +14,14 @@ context: |
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
 # Example:
+rules:
+ proposal:
+   - Keep proposals under 500 words
+   - Always state what is out of scope
+   - always ask questions if ambiguity occurs or there is not enough information in input
+   - use agents.md in the root of this repo for guidelines
+ tasks:
+   - Break tasks into chunks of max 2 hours
 
 # Per-operation guidance (optional)
 # Add advisory guidance for how apply and archive work should be conducted.
