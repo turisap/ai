@@ -27,10 +27,11 @@ rules:
 # Add advisory guidance for how apply and archive work should be conducted.
 # This is separate from artifact rules above.
 # Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+operations:
+ apply:
+   guidance:
+     - use agents.md in the root of this repo for code guidelines
+     - run /validate opencode command when finish apply
+ archive:
+   guidance:
+     - Summarize the archive outcome before finishing
