@@ -4,3 +4,5 @@
 .env-docker
 k8s/mcp-secret.yaml
 argocd/argo-cd-repo-secret.yaml
+*.out
+*.test
