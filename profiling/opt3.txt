@@ -1,0 +1,16 @@
+goos: darwin
+goarch: arm64
+pkg: taskperf
+cpu: Apple M1 Pro
+BenchmarkBuildFanOutKeys-8   	  263096	      4506 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  256408	      4516 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  261061	      4531 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  260900	      4514 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  257540	      4515 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  255526	      4940 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  219902	      5141 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  242019	      4790 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  253351	      4585 ns/op	    9584 B/op	     257 allocs/op
+BenchmarkBuildFanOutKeys-8   	  250458	      4663 ns/op	    9584 B/op	     257 allocs/op
+PASS
+ok  	taskperf	13.376s
