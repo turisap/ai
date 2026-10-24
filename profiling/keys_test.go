@@ -2,6 +2,8 @@ package taskperf
 
 import (
 	"reflect"
+	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -27,5 +29,20 @@ func BenchmarkBuildFanOutKeys(b *testing.B) {
 	b.ResetTimer() // exclude the setup above from the measurement
 	for i := 0; i < b.N; i++ {
 		sinkStrs = BuildFanOutKeys(stores, 42, sts)
+	}
+}
+
+func TestBuildFanOutKeysLargeIDs(t *testing.T) {
+	stores := []int{0, 5, 10, 99, 100, 12345, 987654321}
+	sts := []string{"New", "IN_PROGRESS", "x"}
+	var want []string
+	for _, s := range stores {
+		for _, st := range sts {
+			want = append(want, "tasks:"+strconv.Itoa(s)+":123456789:"+strings.ToLower(st))
+		}
+	}
+	got := BuildFanOutKeys(stores, 123456789, sts)
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("got %v\nwant %v", got, want)
 	}
 }
