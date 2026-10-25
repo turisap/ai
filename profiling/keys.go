@@ -28,10 +28,13 @@ func BuildFanOutKeys(storeIDs []int, userID int64, statuses []string) []string {
 	for _, s := range storeIDs {
 		id := strconv.AppendInt(digits[:0], int64(s), 10)
 		for _, suf := range suffixes {
-			start := sb.Len()
+			// @FIXME this is bad.
+			// sb.Reset()
+			start := sb.Len() // this is good - writing to the buffer in append-only
 			sb.WriteString("tasks:")
 			sb.Write(id)
 			sb.Write(suf)
+			// keys = append(keys, sb.String()[:])
 			keys = append(keys, sb.String()[start:])
 		}
 	}
