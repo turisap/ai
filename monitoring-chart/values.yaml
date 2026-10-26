@@ -16,3 +16,13 @@ prometheus:
     limits:
       cpu: "500m"
       memory: "512Mi"
+
+loki-stack:
+  grafana:
+    enabled: false
+  promtail:
+    enabled: true
+  loki:
+    persistence:
+      enabled: true
+      size: 1Gi
