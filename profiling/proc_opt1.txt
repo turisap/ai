@@ -1,0 +1,16 @@
+goos: darwin
+goarch: arm64
+pkg: taskperf
+cpu: Apple M1 Pro
+BenchmarkProcess-8   	     831	   1309042 ns/op	   97984 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     936	   1281229 ns/op	   97984 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     954	   1246143 ns/op	   97985 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     960	   1243494 ns/op	   97984 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     963	   1242816 ns/op	   97984 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     958	   1243749 ns/op	   97984 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     962	   1241764 ns/op	   97984 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     960	   1247382 ns/op	   97984 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     961	   1244052 ns/op	   97984 B/op	    2000 allocs/op
+BenchmarkProcess-8   	     954	   1248244 ns/op	   97984 B/op	    2000 allocs/op
+PASS
+ok  	taskperf	13.421s
